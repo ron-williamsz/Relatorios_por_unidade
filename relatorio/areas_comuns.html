@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório de Áreas Comuns — Zangari Condomínios</title>
+<style>
+  :root{
+    --marca:#E20D1A; --marca-esc:#b80a14;
+    --agua:#2a78d6; --agua-clr:#5598e7; --valor:#184f95;
+    --sobe:#d03b3b; --desce:#0ca30c; --desce-txt:#006300;
+    --pagina:#7a0a10;
+    --card:#ffffff; --painel:#f6f7f9; --painel-borda:#eceef1;
+    --tinta:#0f1115; --tinta2:#52565e; --muda:#8b9099;
+    --grid:#e7e9ec; --borda:rgba(15,17,21,.08);
+    --sombra:0 1px 2px rgba(15,17,21,.04), 0 10px 30px rgba(15,17,21,.06);
+    --raio:14px;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans); color:var(--tinta);
+    background:radial-gradient(1200px 600px at 50% -10%, #9a0f16 0%, var(--pagina) 55%, #5c070c 100%);
+    padding:28px 20px; -webkit-font-smoothing:antialiased;
+  }
+  .folha{max-width:1180px; margin:0 auto; background:var(--card); border-radius:20px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35); overflow:hidden; border-top:5px solid var(--marca);}
+  .conteudo{padding:26px 30px 8px}
+
+  .topo{display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap}
+  .marca{display:flex; align-items:center; gap:14px}
+  .marca img{height:52px; width:auto; display:block}
+  .titulo h1{font-size:20px; margin:0; letter-spacing:-.2px; display:flex; align-items:center; gap:9px}
+  .titulo .sub{color:var(--tinta2); font-size:12.5px; margin-top:3px}
+  .gota{width:22px;height:22px;flex:none}
+  .topo-acoes{display:flex; flex-direction:column; align-items:flex-end; gap:9px}
+  .periodo-tag{display:inline-flex; align-items:center; gap:7px; background:var(--painel);
+    border:1px solid var(--painel-borda); color:var(--tinta2); padding:7px 12px; border-radius:999px;
+    font-size:12.5px; font-weight:600; white-space:nowrap}
+  .nav-seg{display:inline-flex; background:var(--painel); border:1px solid var(--painel-borda); border-radius:999px; padding:3px}
+  .nav-seg a{text-decoration:none; font-size:12.5px; font-weight:700; color:var(--tinta2); padding:6px 13px; border-radius:999px}
+  .nav-seg a.ativo{background:var(--marca); color:#fff}
+  .btn-pdf{display:inline-flex; align-items:center; gap:7px; cursor:pointer; background:var(--marca); color:#fff;
+    border:none; font:inherit; font-weight:700; font-size:13px; padding:9px 15px; border-radius:9px;
+    box-shadow:0 2px 6px rgba(226,13,26,.28); transition:background .15s}
+  .btn-pdf:hover{background:var(--marca-esc)}
+  .btn-pdf:active{transform:translateY(1px)}
+
+  .secao-tit{display:flex; align-items:center; gap:9px; margin:24px 2px 2px; font-size:15px; font-weight:800; letter-spacing:-.2px}
+  .secao-tit .barra{width:4px; height:17px; border-radius:2px; background:var(--marca)}
+  .secao-sub{color:var(--muda); font-size:12.5px; margin:2px 2px 10px 15px}
+
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin:6px 0}
+  .kpi{background:var(--card); border:1px solid var(--borda); border-radius:var(--raio); padding:15px 16px; box-shadow:var(--sombra)}
+  .kpi .rot{display:flex; align-items:center; gap:7px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--muda)}
+  .kpi .val{font-size:26px; font-weight:800; letter-spacing:-.5px; margin-top:8px; line-height:1.05}
+  .kpi .val u{font-size:15px; font-weight:600; color:var(--tinta2); text-decoration:none; margin-left:3px}
+  .kpi .val.sm{font-size:19px}
+  .kpi .obs{font-size:12px; color:var(--tinta2); margin-top:6px}
+  .dot{width:9px;height:9px;border-radius:3px;flex:none}
+  .trend-up{color:var(--sobe)} .trend-down{color:var(--desce-txt)} .trend-flat{color:var(--muda)}
+
+  .grade{display:grid; grid-template-columns:1.5fr 1fr; gap:16px; margin:14px 0}
+  .painel-graf{background:var(--card); border:1px solid var(--borda); border-radius:var(--raio); box-shadow:var(--sombra); padding:16px 16px 10px}
+  .painel-graf h2{font-size:14px; margin:0 0 2px; display:flex; align-items:center; gap:8px}
+  .painel-graf .leg{font-size:12px; color:var(--muda); margin:0 0 6px}
+  .chart{width:100%; height:330px}
+
+  .controles{display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap; margin:6px 0 4px; padding:16px;
+    background:var(--painel); border:1px solid var(--painel-borda); border-radius:var(--raio)}
+  .campo{display:flex; flex-direction:column; gap:5px}
+  .campo label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--muda)}
+  select,input[type=text]{font:inherit; font-size:14px; padding:9px 11px; border-radius:9px; border:1px solid #d3d7dd;
+    background:#fff; color:var(--tinta); min-height:40px}
+  select:focus,input:focus{outline:2px solid var(--agua); outline-offset:1px; border-color:var(--agua)}
+  #ponto{min-width:300px}
+  .navbtns{display:flex; gap:6px}
+  .btn{font:inherit; cursor:pointer; border:1px solid #d3d7dd; background:#fff; color:var(--tinta); width:40px; height:40px;
+    border-radius:9px; font-size:16px; display:grid; place-items:center}
+  .btn:hover{background:var(--painel); border-color:#c2c7cf}
+  .conta{margin-left:auto; align-self:center; color:var(--muda); font-size:12.5px; font-weight:600}
+
+  .ponto-head{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin:20px 2px 6px}
+  .ponto-cod{font-size:26px; font-weight:800; letter-spacing:-.5px; line-height:1.1}
+  .ponto-cod small{font-size:13px; font-weight:600; color:var(--muda); display:block; margin-top:2px}
+  .badges{display:flex; gap:8px; flex-wrap:wrap; margin:8px 2px 0}
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; padding:5px 10px; border-radius:999px; border:1px solid transparent}
+  .badge.warn{background:#fff5e6; color:#93610a; border-color:#f4d9a6}
+  .badge.info{background:#eaf2fd; color:#1a4f96; border-color:#c6dcf7}
+
+  .tabela-wrap{margin:6px 0 8px; overflow-x:auto; border:1px solid var(--borda); border-radius:var(--raio)}
+  table{border-collapse:collapse; width:100%; font-size:13px; font-variant-numeric:tabular-nums}
+  caption{text-align:left; font-size:14px; font-weight:700; padding:14px 16px 4px}
+  th,td{padding:10px 14px; border-bottom:1px solid var(--grid); text-align:right; white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muda); font-weight:700; background:var(--painel)}
+  tbody tr:hover{background:#fafbfc}
+  tfoot td{font-weight:800; border-top:2px solid var(--grid); border-bottom:none; background:#fcfcfd}
+  .delta{font-weight:600} .delta .arw{font-size:11px}
+  .na{color:var(--muda)}
+
+  footer{margin-top:14px; padding:20px 30px 24px; border-top:1px solid var(--grid); display:flex;
+    justify-content:space-between; align-items:center; gap:18px; flex-wrap:wrap; background:linear-gradient(180deg,#fff,#fcfcfd)}
+  footer img{height:46px; width:auto}
+  .rodape-info{color:var(--muda); font-size:12px; text-align:right; line-height:1.6}
+  .rodape-info b{color:var(--tinta2)} .social{color:var(--marca); font-weight:700}
+
+  @media (max-width:900px){ .grade{grid-template-columns:1fr} .conta{width:100%; margin:0; text-align:right} }
+  @page{ size:A4 landscape; margin:10mm; }
+  @media print{
+    body{background:#fff; padding:0}
+    .folha{box-shadow:none; border-radius:0; max-width:none; border-top-width:4px}
+    .controles,.no-print{display:none !important}
+    .painel-graf,.kpi{box-shadow:none}
+    .kpis,.grade,.painel-graf,.tabela-wrap,.ponto-head,footer{break-inside:avoid; page-break-inside:avoid}
+    tr{break-inside:avoid} footer{background:none}
+  }
+</style>
+</head>
+<body>
+<div class="folha">
+  <div class="conteudo">
+
+    <div class="topo">
+      <div class="marca">
+        <img src="assets/logo zng condominios preto.png" alt="Zangari Condomínios">
+        <div class="titulo">
+          <h1>
+            <svg class="gota" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2.5C12 2.5 5 10.2 5 15a7 7 0 0 0 14 0c0-4.8-7-12.5-7-12.5Z" fill="#2a78d6"/>
+              <path d="M9 15.5a3 3 0 0 0 3 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Relatório de Áreas Comuns
+          </h1>
+          <div class="sub" id="cond-nome">—</div>
+        </div>
+      </div>
+      <div class="topo-acoes">
+        <div class="nav-seg no-print">
+          <a href="index.html">Unidades</a>
+          <a href="areas_comuns.html" class="ativo">Áreas Comuns</a>
+        </div>
+        <div class="periodo-tag" id="periodo-tag">—</div>
+        <button class="btn-pdf no-print" id="btn-pdf" type="button" title="Salvar / imprimir como PDF">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3v10m0 0 4-4m-4 4-4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Exportar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== VISÃO GERAL ===== -->
+    <div class="secao-tit"><span class="barra"></span> Visão geral das áreas comuns</div>
+    <div class="secao-sub" id="ov-sub">—</div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grade">
+      <div class="painel-graf">
+        <h2><span class="dot" style="background:var(--agua)"></span> Evolução do consumo total</h2>
+        <p class="leg">Barras: consumo (m³) · Linha: custo (R$) — soma de todos os pontos por leitura</p>
+        <div class="chart" id="chart-evolucao"></div>
+      </div>
+      <div class="painel-graf">
+        <h2>Maiores consumidores</h2>
+        <p class="leg" id="rank-sub">Consumo no período atual (m³)</p>
+        <div class="chart" id="chart-ranking"></div>
+      </div>
+    </div>
+
+    <!-- ===== DETALHE DO PONTO ===== -->
+    <div class="secao-tit"><span class="barra"></span> Detalhe por ponto de medição</div>
+    <div class="secao-sub">Selecione um ponto para ver o histórico de leituras e o consumo mês a mês.</div>
+
+    <div class="controles">
+      <div class="campo">
+        <label for="grupo">Área</label>
+        <select id="grupo"></select>
+      </div>
+      <div class="campo">
+        <label for="ponto">Ponto de medição</label>
+        <select id="ponto"></select>
+      </div>
+      <div class="campo">
+        <label>&nbsp;</label>
+        <div class="navbtns">
+          <button class="btn" id="prev" title="Anterior" aria-label="Anterior">◀</button>
+          <button class="btn" id="next" title="Próximo" aria-label="Próximo">▶</button>
+        </div>
+      </div>
+      <div class="conta" id="conta"></div>
+    </div>
+
+    <div class="ponto-head">
+      <div class="ponto-cod" id="ponto-cod">—</div>
+    </div>
+    <div class="badges" id="badges"></div>
+
+    <div class="kpis" id="kpis-ponto"></div>
+
+    <div class="painel-graf" style="margin:14px 0">
+      <h2><span class="dot" style="background:var(--agua)"></span> Histórico do ponto — consumo e custo</h2>
+      <p class="leg">Barras: consumo (m³) · Linha: custo (R$) por leitura</p>
+      <div class="chart" id="chart-ponto" style="height:320px"></div>
+    </div>
+
+    <div class="tabela-wrap">
+      <table>
+        <caption id="tab-cap">Detalhamento por leitura</caption>
+        <thead><tr><th>Leitura</th><th>Medição</th><th>Consumo (m³)</th><th>Δ m³</th><th>Custo (R$)</th></tr></thead>
+        <tbody id="tab-body"></tbody>
+        <tfoot id="tab-foot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <img src="assets/Ativo 8@4x.png" alt="Grupo Zangari — À frente, para estar ao seu lado">
+    <div class="rodape-info">
+      <div><b>Zangari Condomínios</b> · <span class="social">@zangariadm</span></div>
+      <div id="rodape-ger">Relatório gerado automaticamente</div>
+      <div>Fonte: aba "Áreas Comuns" · tarifa R$ 4,76/m³</div>
+    </div>
+  </footer>
+</div>
+
+<script src="vendor/echarts.min.js"></script>
+<script src="dados_areas_comuns.js"></script>
+<script>
+(function(){
+  "use strict";
+  var D = window.DADOS_AC;
+  if(!D){ document.body.innerHTML="<p style='color:#fff;text-align:center'>Falha ao carregar dados_areas_comuns.js.</p>"; return; }
+
+  var fInt=new Intl.NumberFormat('pt-BR');
+  var f1=new Intl.NumberFormat('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+  var fBRL=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+  var f0=function(v){return v==null?'—':fInt.format(v);};
+  var brl=function(v){return v==null?'—':fBRL.format(v);};
+  var pctTxt=function(v){return v==null?'—':(v>0?'+':'')+f1.format(v)+'%';};
+  var curto=function(n){var i=n.indexOf('(');return (i>0?n.slice(0,i):n).trim();};
+  var INK='#0f1115', INK2='#52565e', MUDA='#8b9099', GRID='#e7e9ec';
+  var JAN=15; // janela de periodos exibidos
+
+  function corDelta(v){
+    if(v==null||v===0) return {c:'var(--muda)',cls:'trend-flat',arw:'●'};
+    return v>0?{c:'var(--sobe)',cls:'trend-up',arw:'▲'}:{c:'var(--desce-txt)',cls:'trend-down',arw:'▼'};
+  }
+  function kpi(rot,val,obs,cls){return '<div class="kpi"><div class="rot">'+rot+'</div><div class="val '+(cls||'')+'">'+val+'</div><div class="obs">'+(obs||'')+'</div></div>';}
+  function linhaTt(cor,rot,val){return '<div style="display:flex;align-items:center;gap:7px;margin:3px 0"><span style="width:9px;height:9px;border-radius:3px;background:'+cor+';display:inline-block"></span><span style="color:#52565e">'+rot+'</span><b style="margin-left:auto">'+val+'</b></div>';}
+
+  // ---------- Cabeçalho ----------
+  document.getElementById('cond-nome').textContent = D.condominio.associacao||'';
+  document.getElementById('periodo-tag').textContent = (D.periodo_inicial||'')+'  →  '+(D.periodo_final||'');
+  document.getElementById('rodape-ger').innerHTML = 'Relatório gerado em <b>'+(D.gerado_em||'')+'</b>';
+
+  // ---------- KPIs visão geral ----------
+  var rg=D.resumo_geral, cd=corDelta(rg.variacao_pct);
+  document.getElementById('ov-sub').innerHTML =
+    'Período atual: <b>'+rg.rotulo_atual+'</b> · '+rg.n_pontos+' pontos de medição em '+rg.n_grupos+' áreas';
+  document.getElementById('kpis').innerHTML =
+    kpi('<span class="dot" style="background:var(--agua)"></span>Consumo do período', f0(rg.consumo_ultimo)+'<u>m³</u>', 'em '+rg.rotulo_atual+' · '+rg.n_pontos+' pontos') +
+    kpi('<span class="dot" style="background:var(--valor)"></span>Custo total', brl(rg.valor_ultimo), 'a '+fBRL.format(D.tarifa)+'/m³') +
+    kpi('Variação vs período anterior', '<span class="'+cd.cls+'">'+(rg.variacao_pct==null?'—':cd.arw+' '+pctTxt(Math.abs(rg.variacao_pct)).replace('+',''))+'</span>', 'vs '+rg.rotulo_anterior, 'sm') +
+    kpi('Maior consumidor', curto(rg.maior.nome), rg.maior.consumo+' m³ · '+rg.maior.grupo, 'sm') +
+    kpi('Tarifa vigente', fBRL.format(D.tarifa)+'<u>/m³</u>', 'áreas comuns (uniforme)');
+
+  // ---------- Gráfico evolução ----------
+  var chEvo=echarts.init(document.getElementById('chart-evolucao'), null, {renderer:'svg'});
+  var chRank=echarts.init(document.getElementById('chart-ranking'), null, {renderer:'svg'});
+  var chPonto=echarts.init(document.getElementById('chart-ponto'), null, {renderer:'svg'});
+
+  function comboOption(serie, opts){
+    opts=opts||{};
+    var cats=serie.map(function(p){return p.rotulo;});
+    var cons=serie.map(function(p){return p.consumo;});
+    var val=serie.map(function(p){return p.valor;});
+    return {
+      animationDuration:450,
+      grid:{left:8,right:8,top:44,bottom:28,containLabel:true},
+      legend:{data:['Consumo (m³)','Custo (R$)'],top:6,left:0,itemGap:18,textStyle:{color:INK2,fontSize:12},icon:'roundRect'},
+      tooltip:{trigger:'axis', axisPointer:{type:'cross',crossStyle:{color:'#c8ccd2'},label:{backgroundColor:'#4a4f57'}},
+        backgroundColor:'#fff',borderColor:GRID,borderWidth:1,padding:12,textStyle:{color:INK,fontSize:12},
+        extraCssText:'box-shadow:0 8px 24px rgba(15,17,21,.12);border-radius:10px;',
+        formatter:function(pp){var i=pp[0].dataIndex,p=serie[i];var out='<div style="font-weight:700;margin-bottom:6px">Leitura '+p.rotulo+'</div>';
+          out+=linhaTt('var(--agua)','Consumo', p.consumo==null?'—':fInt.format(p.consumo)+' m³');
+          out+=linhaTt('var(--valor)','Custo', brl(p.valor));
+          if(opts.leitura && p.leitura!=null) out+='<div style="font-size:11px;color:#8b9099;margin-top:4px">Medição: '+fInt.format(p.leitura)+'</div>';
+          return out;}},
+      xAxis:{type:'category',data:cats,boundaryGap:true,axisLine:{lineStyle:{color:'#c3c2b7'}},axisTick:{show:false},
+        axisLabel:{color:INK2,fontSize:11,fontWeight:600,rotate:cats.length>9?35:0}},
+      yAxis:[
+        {type:'value',name:'m³',nameTextStyle:{color:MUDA,fontSize:11},axisLabel:{color:MUDA,fontSize:11,formatter:function(v){return fInt.format(v);}},
+         splitLine:{lineStyle:{color:GRID}},axisLine:{show:false},axisTick:{show:false}},
+        {type:'value',name:'R$',nameTextStyle:{color:MUDA,fontSize:11},axisLabel:{color:MUDA,fontSize:11,formatter:function(v){return v>=1000?(v/1000)+'k':v;}},
+         splitLine:{show:false},axisLine:{show:false},axisTick:{show:false}}
+      ],
+      series:[
+        {name:'Consumo (m³)',type:'bar',yAxisIndex:0,data:cons,barMaxWidth:26,
+         itemStyle:{borderRadius:[4,4,0,0],color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#5598e7'},{offset:1,color:'#2a78d6'}])},
+         label:{show:opts.label!==false,position:'top',color:INK2,fontSize:10.5,fontWeight:600,formatter:function(o){return o.value==null?'':fInt.format(o.value);}},z:2},
+        {name:'Custo (R$)',type:'line',yAxisIndex:1,data:val,smooth:false,connectNulls:false,
+         lineStyle:{color:'#184f95',width:2},itemStyle:{color:'#184f95'},symbol:'circle',symbolSize:7,z:3}
+      ]
+    };
+  }
+
+  chEvo.setOption(comboOption(D.serie_total.slice(-JAN)));
+
+  // ---------- Ranking ----------
+  var top=D.ranking.filter(function(x){return x.consumo>0;}).slice(0,10).reverse();
+  chRank.setOption({
+    animationDuration:450,
+    grid:{left:8,right:36,top:10,bottom:20,containLabel:true},
+    tooltip:{trigger:'item',backgroundColor:'#fff',borderColor:GRID,borderWidth:1,textStyle:{color:INK,fontSize:12},
+      extraCssText:'box-shadow:0 8px 24px rgba(15,17,21,.12);border-radius:10px;',
+      formatter:function(o){var d=top[o.dataIndex];return '<b>'+curto(d.nome)+'</b><br>'+d.grupo+'<br>'+fInt.format(d.consumo)+' m³ · '+brl(d.valor);}},
+    xAxis:{type:'value',axisLabel:{color:MUDA,fontSize:11},splitLine:{lineStyle:{color:GRID}},axisLine:{show:false},axisTick:{show:false}},
+    yAxis:{type:'category',data:top.map(function(x){return curto(x.nome);}),axisLine:{lineStyle:{color:'#c3c2b7'}},axisTick:{show:false},
+      axisLabel:{color:INK2,fontSize:11.5,fontWeight:600,width:130,overflow:'truncate'}},
+    series:[{type:'bar',data:top.map(function(x){return x.consumo;}),barMaxWidth:18,
+      itemStyle:{borderRadius:[0,4,4,0],color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#2a78d6'},{offset:1,color:'#5598e7'}])},
+      label:{show:true,position:'right',color:INK2,fontSize:11,fontWeight:600,formatter:function(o){return fInt.format(o.value)+' m³';}}}]
+  });
+
+  // ---------- Seletor de ponto ----------
+  var AREAS=D.areas.slice();
+  var elGrupo=document.getElementById('grupo'), elPonto=document.getElementById('ponto'), elConta=document.getElementById('conta');
+  elGrupo.innerHTML='<option value="">Todas as áreas ('+AREAS.length+')</option>'+
+    D.grupos.map(function(g){return '<option value="'+g.nome+'">'+g.nome+' ('+g.qtd+')</option>';}).join('');
+
+  var lista=AREAS.slice();
+  function aplicar(){
+    var g=elGrupo.value;
+    lista=AREAS.filter(function(a){return !g || a.grupo===g;});
+    // agrupa em optgroups por área
+    var porG={};
+    lista.forEach(function(a){(porG[a.grupo]=porG[a.grupo]||[]).push(a);});
+    elPonto.innerHTML=Object.keys(porG).map(function(gr){
+      return '<optgroup label="'+gr+'">'+porG[gr].map(function(a){
+        return '<option value="'+a.chave.replace(/"/g,'&quot;')+'">'+curto(a.nome)+'</option>';}).join('')+'</optgroup>';
+    }).join('');
+    elConta.textContent=lista.length+(lista.length===1?' ponto':' pontos');
+    if(lista.length){ elPonto.value=lista[0].chave; renderPonto(lista[0].chave); }
+  }
+  function acharPonto(ch){return AREAS.find(function(a){return a.chave===ch;});}
+
+  function renderPonto(ch){
+    var a=acharPonto(ch); if(!a) return;
+    var s=a.serie, r=a.resumo;
+    document.getElementById('ponto-cod').innerHTML = curto(a.nome)+' <small>'+a.grupo+' · última leitura '+(r.ult_rotulo||'—')+' ('+f0(r.leitura_atual)+')</small>';
+    document.title='Áreas Comuns — '+curto(a.nome)+' · Zangari Condomínios';
+
+    var badges=[];
+    if(r.sem_leitura_recente) badges.push('<span class="badge warn" title="Este ponto não teve leitura no período mais recente.">⏸ Sem leitura recente</span>');
+    if(s.some(function(p){return p.flags.indexOf('consumo_negativo')>=0;})) badges.push('<span class="badge warn" title="Alguma leitura resultou em consumo negativo (correção/rollback).">± Correção de leitura</span>');
+    if(curto(a.nome)!==a.nome) badges.push('<span class="badge info" title="'+a.nome.replace(/"/g,'&quot;')+'">ℹ '+a.nome.slice(a.nome.indexOf('(')).replace(/[()]/g,'')+'</span>');
+    document.getElementById('badges').innerHTML=badges.join('');
+
+    var vu=r.variacao_pct, cd2=corDelta(vu);
+    document.getElementById('kpis-ponto').innerHTML=
+      kpi('<span class="dot" style="background:var(--agua)"></span>Consumo do período', f0(r.consumo_ultimo)+'<u>m³</u>', 'em '+(r.ult_rotulo||'—')) +
+      kpi('<span class="dot" style="background:var(--valor)"></span>Custo do período', brl(r.valor_ultimo), 'a '+fBRL.format(D.tarifa)+'/m³') +
+      kpi('Média por leitura', f1.format(r.media)+'<u>m³</u>', r.leituras+' leituras no histórico') +
+      kpi('Variação vs anterior', '<span class="'+cd2.cls+'">'+(vu==null?'—':cd2.arw+' '+pctTxt(Math.abs(vu)).replace('+',''))+'</span>', 'consumo', 'sm');
+
+    chPonto.setOption(comboOption(s.slice(-JAN), {leitura:true}), true);
+
+    // tabela
+    var prev=null;
+    var body=s.slice(-JAN).map(function(p){
+      var dcm=(p.consumo!=null && prev!=null)?(p.consumo-prev):null;
+      var cd3=corDelta(dcm); prev=p.consumo;
+      return '<tr><td>'+p.rotulo+(p.flags.length?' <span class="na" title="'+p.flags.join(', ')+'">⚠</span>':'')+'</td>'+
+        '<td>'+f0(p.leitura)+'</td>'+
+        '<td><b>'+(p.consumo==null?'<span class="na">—</span>':fInt.format(p.consumo))+'</b></td>'+
+        (dcm==null?'<td class="na">—</td>':'<td class="delta '+cd3.cls+'"><span class="arw">'+cd3.arw+'</span> '+(dcm>0?'+':'')+fInt.format(dcm)+'</td>')+
+        '<td>'+brl(p.valor)+'</td></tr>';
+    }).join('');
+    document.getElementById('tab-body').innerHTML=body;
+    document.getElementById('tab-foot').innerHTML='<tr><td>Total no histórico</td><td class="na" style="text-align:right">'+r.leituras+' leituras</td><td>'+f0(r.consumo_total)+'</td><td></td><td>'+brl(r.valor_total)+'</td></tr>';
+    document.getElementById('tab-cap').textContent='Detalhamento por leitura — '+curto(a.nome);
+  }
+
+  function passo(n){var i=lista.findIndex(function(a){return a.chave===elPonto.value;});if(i<0)i=0;i=(i+n+lista.length)%lista.length;elPonto.value=lista[i].chave;renderPonto(lista[i].chave);}
+  elGrupo.addEventListener('change',aplicar);
+  elPonto.addEventListener('change',function(){renderPonto(elPonto.value);});
+  document.getElementById('prev').addEventListener('click',function(){passo(-1);});
+  document.getElementById('next').addEventListener('click',function(){passo(1);});
+  document.getElementById('btn-pdf').addEventListener('click',function(){window.print();});
+  window.addEventListener('resize',function(){chEvo.resize();chRank.resize();chPonto.resize();});
+
+  aplicar();
+})();
+</script>
+</body>
+</html>
