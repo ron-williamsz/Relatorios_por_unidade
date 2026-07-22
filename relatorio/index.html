@@ -148,16 +148,49 @@
   }
   @media (max-width:520px){ .kpis{grid-template-columns:1fr} .conteudo{padding:20px 16px 4px} }
 
-  @page{ size:A4 landscape; margin:10mm; }
+  .btn-todos{ background:#fff !important; color:var(--marca); border:1.5px solid var(--marca); box-shadow:none }
+  .btn-todos:hover{ background:#fff2f2 }
+
+  /* ── páginas do "Exportar todos" (uma por unidade) ── */
+  #print-todos{ display:none }
+  .upage{ page-break-after:always; padding:4px 6px 0 }
+  .upage:last-child{ page-break-after:auto }
+  .up-head{ display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid var(--marca); padding-bottom:8px; margin-bottom:12px }
+  .up-cod{ font-size:22px; font-weight:800; letter-spacing:-.5px } .up-cod span{ font-size:13px; font-weight:600; color:var(--muda) }
+  .up-hsub{ font-size:11.5px; color:var(--tinta2) }
+  .up-kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px }
+  .up-kpi{ border:1px solid #cfd3d9; border-radius:10px; padding:10px 12px; background:#fbfcfd }
+  .up-kpi .r{ font-size:9.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--muda); font-weight:700 }
+  .up-kpi .v{ font-size:19px; font-weight:800; margin-top:5px } .up-kpi .o{ font-size:11px; color:var(--tinta2); margin-top:3px }
+  .up-chart{ border:1px solid #cfd3d9; border-radius:10px; padding:12px 12px 6px; margin-bottom:14px; background:#fff }
+  .up-chart h3{ margin:0 0 6px; font-size:12.5px }
+  .up-tab{ width:100%; border-collapse:collapse; font-size:12px; font-variant-numeric:tabular-nums }
+  .up-tab th,.up-tab td{ padding:7px 10px; border-bottom:1px solid var(--grid); text-align:right; white-space:nowrap }
+  .up-tab th:first-child,.up-tab td:first-child{ text-align:left }
+  .up-tab thead th{ background:#eef0f3; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--muda); font-weight:700 }
+  .up-foot{ margin-top:12px; font-size:10px; color:var(--muda); text-align:center; border-top:1px solid var(--grid); padding-top:8px }
+
+  @page{ size:A4 portrait; margin:8mm; }
   @media print{
-    body{background:#fff; padding:0}
-    .folha{box-shadow:none; border-radius:0; max-width:none; border-top-width:4px}
-    .controles,.no-print{display:none !important}
-    .painel-graf,.kpi{box-shadow:none}
-    .grade{grid-template-columns:1fr 1fr}
-    .kpis,.grade,.painel-graf,.tabela-wrap,.unid-head,footer{break-inside:avoid; page-break-inside:avoid}
-    tr{break-inside:avoid}
-    footer{background:none}
+    *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    body{ background:#d8dbe0; padding:9px }
+    .folha{ box-shadow:none; border-radius:12px; max-width:none;
+            border:1px solid #cfd3d9; border-top:5px solid var(--marca) }
+    .controles,.no-print{ display:none !important }
+    .kpi,.painel-graf{ box-shadow:none !important; border:1px solid #cfd3d9 !important; background:#fbfcfd !important }
+    .tabela-wrap{ border:1px solid #cfd3d9 !important }
+    thead th{ background:#eef0f3 !important }
+    tfoot td{ background:#f5f6f8 !important }
+    .kpis{ grid-template-columns:repeat(2,1fr) }    /* retrato: KPIs 2×2 */
+    .grade{ grid-template-columns:1fr }             /* retrato: gráficos empilhados */
+    .kpis,.grade,.painel-graf,.tabela-wrap,.unid-head,footer{ break-inside:avoid; page-break-inside:avoid }
+    tr{ break-inside:avoid }
+    /* tabela detalhada cabe no retrato (8 colunas) */
+    #tabela{ font-size:9.5px }
+    #tabela th, #tabela td{ padding:5px 6px }
+    #tab-cap{ display:block; white-space:nowrap; font-size:12px }
+    .modo-todos .folha{ display:none !important }
+    .modo-todos #print-todos{ display:block !important }
   }
 </style>
 </head>
@@ -186,12 +219,19 @@
           <a href="areas_comuns.html">Áreas Comuns</a>
         </div>
         <div class="periodo-tag" id="periodo-tag">—</div>
-        <button class="btn-pdf no-print" id="btn-pdf" type="button" title="Salvar / imprimir como PDF">
+        <button class="btn-pdf no-print" id="btn-pdf" type="button" title="Exportar em PDF a unidade selecionada">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 3v10m0 0 4-4m-4 4-4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
           </svg>
           Exportar PDF
+        </button>
+        <button class="btn-pdf btn-todos no-print" id="btn-todos" type="button" title="Exportar em PDF todas as unidades do filtro atual (uma por página)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 3h9a2 2 0 0 1 2 2v11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <rect x="4" y="7" width="12" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          Exportar todos (<span id="btn-todos-n">705</span>)
         </button>
       </div>
     </div>
@@ -271,6 +311,9 @@
   </footer>
 </div>
 
+<!-- páginas geradas pelo "Exportar todos" (só aparecem na impressão) -->
+<div id="print-todos"></div>
+
 <script src="vendor/echarts.min.js"></script>
 <script src="dados_unidades.js"></script>
 <script>
@@ -302,7 +345,7 @@
       elUnid=document.getElementById('unidade'), elConta=document.getElementById('conta-unid');
 
   // preenche header/rodapé fixos
-  document.getElementById('cond-nome').textContent = D.condominio.associacao || '';
+  document.getElementById('cond-nome').textContent = (D.condominio.associacao||'').replace(/^\s*\d+\s*[-–]\s*/, '');
   document.getElementById('periodo-tag').textContent = PER.length ? (PER[0].curto+'  →  '+PER[PER.length-1].curto) : '';
   document.getElementById('rodape-ger').innerHTML = 'Relatório gerado em <b>'+ (D.gerado_em||'') +'</b>';
 
@@ -326,6 +369,7 @@
       return '<option value="'+k+'">'+D.unidades[k].unidade+'</option>';
     }).join('');
     elConta.textContent = filtradas.length + (filtradas.length===1?' unidade':' unidades');
+    var _bt=document.getElementById('btn-todos-n'); if(_bt) _bt.textContent=filtradas.length;
     if(filtradas.length){ elUnid.value=filtradas[0]; render(filtradas[0]); }
     else { elConta.textContent='Nenhuma unidade'; }
   }
@@ -380,7 +424,7 @@
     chCombo.setOption({
       animationDuration:450,
       grid:{left:8,right:8,top:44,bottom:28,containLabel:true},
-      legend:{data:['Consumo (m³)','Valor (R$)'],top:6,left:0,itemGap:18,textStyle:{color:INK2,fontSize:12},
+      legend:{data:['Consumo (m³)','Valor (R$)'],top:6,left:'center',itemGap:18,textStyle:{color:INK2,fontSize:12},
               icon:'roundRect'},
       tooltip:{trigger:'axis', axisPointer:{type:'cross',crossStyle:{color:'#c8ccd2'},label:{backgroundColor:'#4a4f57'}},
         backgroundColor:'#ffffff', borderColor:GRID, borderWidth:1, padding:12,
@@ -437,7 +481,7 @@
         textStyle:{color:INK,fontSize:12}, extraCssText:'box-shadow:0 8px 24px rgba(15,17,21,.12);border-radius:10px;',
         formatter:function(o){var r=o.data._real; return '<b>'+o.name+'</b><br>'+(r==null?'sem base':((r>0?'+':'')+fInt.format(r)+' m³'+(o.data._pct!=null?' ('+pctTxt(o.data._pct)+')':'')));}},
       xAxis:{type:'category', data:dcat, axisLine:{lineStyle:{color:'#c3c2b7'}}, axisTick:{show:false},
-        axisLabel:{color:INK2,fontSize:10.5,interval:0}},
+        axisLabel:{color:INK2,fontSize:9.5,interval:0,rotate:dcat.length>3?22:0}},
       yAxis:{type:'value', axisLabel:{color:MUDA,fontSize:11,formatter:function(v){return fInt.format(v);}},
         splitLine:{lineStyle:{color:GRID}}, axisLine:{show:false}, axisTick:{show:false}},
       series:[{type:'bar', data:ddata, barMaxWidth:34,
@@ -487,6 +531,62 @@
     return ' <span class="flagico" title="'+rotFlags(fs)+'">'+fs.map(function(f){return ic[f]||'•';}).join('')+'</span>';
   }
 
+  // ---------- Exportar todos (uma página por unidade) ----------
+  function svgBarras(serie){
+    var W=740,H=170, base=H-26, top=16, n=serie.length||1;
+    var vals=serie.map(function(p){return p.consumo_m3==null?0:p.consumo_m3;});
+    var max=Math.max(1,Math.max.apply(null,vals));
+    var slot=(W-16)/n, bw=Math.min(46,slot*0.5), g='';
+    serie.forEach(function(p,i){
+      var v=p.consumo_m3==null?0:p.consumo_m3;
+      var h=(base-top)*(v/max), x=8+slot*i+(slot-bw)/2, y=base-h;
+      g+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(.5,h).toFixed(1)+'" rx="3" fill="#2a78d6"/>';
+      g+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y-5).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#52565e">'+(p.consumo_m3==null?'—':fInt.format(p.consumo_m3))+'</text>';
+      g+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="#8b9099">'+PMAP[p.periodo].curto+'</text>';
+    });
+    return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="148" preserveAspectRatio="xMidYMid meet">'+
+      '<line x1="8" y1="'+base+'" x2="'+(W-8)+'" y2="'+base+'" stroke="#e1e0d9" stroke-width="1"/>'+g+'</svg>';
+  }
+  function montarPaginaUnidade(u){
+    var r=u.resumo, s=u.serie, vu=r.variacao_ultimo_pct, cd=corDelta(vu), h=u.hidrometro;
+    var kp=function(rot,val,obs){return '<div class="up-kpi"><div class="r">'+rot+'</div><div class="v">'+val+'</div><div class="o">'+(obs||'')+'</div></div>';};
+    var linhas=s.map(function(p){
+      var per=PMAP[p.periodo], dc=corDelta(p.delta_consumo_abs);
+      return '<tr><td>'+per.curto+'</td><td>'+f0(p.leitura_anterior)+'</td><td>'+f0(p.leitura_atual)+'</td>'+
+        '<td><b>'+(p.consumo_m3==null?'—':fInt.format(p.consumo_m3))+'</b></td>'+
+        (p.delta_consumo_abs==null?'<td>—</td>':'<td class="'+dc.cls+'">'+dc.arw+' '+(p.delta_consumo_abs>0?'+':'')+fInt.format(p.delta_consumo_abs)+'</td>')+
+        '<td>'+brl(p.valor)+'</td></tr>';
+    }).join('');
+    var per=PER.length?PER[0].curto+' → '+PER[PER.length-1].curto:'';
+    var assoc=(D.condominio.associacao||'').replace(/^\s*\d+\s*[-–]\s*/,'');
+    return '<section class="upage">'+
+      '<div class="up-head"><div class="up-cod">'+u.unidade+' <span>· Bloco '+u.bloco+'</span></div>'+
+        '<div class="up-hsub">Relatório de Consumo de Água · '+per+'</div></div>'+
+      '<div class="up-kpis">'+
+        kp('Consumo total', f0(r.consumo_total)+' m³', r.meses_com_dado+' meses com leitura')+
+        kp('Valor total', brl(r.valor_total), 'no período')+
+        kp('Média mensal', f1.format(r.media_consumo)+' m³', brl(r.media_valor)+' / mês')+
+        kp('Variação vs anterior', '<span class="'+cd.cls+'">'+(vu==null?'—':cd.arw+' '+pctTxt(Math.abs(vu)).replace('+',''))+'</span>', 'consumo')+
+      '</div>'+
+      '<div class="up-chart"><h3>Evolução mensal do consumo (m³)</h3>'+svgBarras(s)+'</div>'+
+      '<table class="up-tab"><thead><tr><th>Período</th><th>Leit. ant.</th><th>Leit. atual</th><th>Consumo (m³)</th><th>Δ m³</th><th>Valor (R$)</th></tr></thead><tbody>'+linhas+
+        '<tr style="border-top:2px solid #e7e9ec"><td style="font-weight:800">Total</td><td colspan="2"></td><td style="font-weight:800">'+f0(r.consumo_total)+'</td><td></td><td style="font-weight:800">'+brl(r.valor_total)+'</td></tr>'+
+        '</tbody></table>'+
+      '<div class="up-foot">'+assoc+' · Hidrômetro: '+(h.condicao||'—')+' · Cavalete: '+(h.estado_cavalete||'—')+' · Lacre: '+(h.numero_lacre||'—')+' · Zangari Condomínios · @zangariadm</div>'+
+    '</section>';
+  }
+  function exportarTodos(){
+    if(!filtradas.length){ alert('Nenhuma unidade no filtro atual.'); return; }
+    if(filtradas.length>60 && !confirm('Serão geradas '+filtradas.length+' páginas (uma por unidade). Pode levar alguns segundos. Continuar?')) return;
+    document.getElementById('print-todos').innerHTML = filtradas.map(function(k){return montarPaginaUnidade(D.unidades[k]);}).join('');
+    document.body.classList.add('modo-todos');
+    setTimeout(function(){ window.print(); }, 80);
+  }
+  window.addEventListener('afterprint', function(){
+    document.body.classList.remove('modo-todos');
+    document.getElementById('print-todos').innerHTML='';
+  });
+
   // ---------- Navegação ----------
   function irPasso(n){
     var i=filtradas.indexOf(elUnid.value); if(i<0)i=0;
@@ -499,6 +599,7 @@
   document.getElementById('prev').addEventListener('click',function(){irPasso(-1);});
   document.getElementById('next').addEventListener('click',function(){irPasso(1);});
   document.getElementById('btn-pdf').addEventListener('click',function(){ window.print(); });
+  document.getElementById('btn-todos').addEventListener('click', exportarTodos);
   window.addEventListener('resize',function(){chCombo.resize();chDelta.resize();});
 
   // ---------- Início ----------

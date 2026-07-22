@@ -1,6 +1,7 @@
-# ─── Planilhas de origem (dados brutos — NÃO versionar) ───
+# ─── Planilhas / exportações de origem (dados brutos — NÃO versionar) ───
 *.xlsx
 *.xls
+*.csv
 ~$*.xlsx
 ~$*.xls
 
