@@ -412,10 +412,10 @@
     var comDado=s.filter(function(p){return p.consumo_m3!=null;});
     var rotVar = comDado.length>=2 ? (PMAP[comDado[comDado.length-2].periodo].curto+' → '+PMAP[comDado[comDado.length-1].periodo].curto) : 'sem base';
     document.getElementById('kpis').innerHTML =
-      kpi('<span class="dot" style="background:var(--agua)"></span>Consumo total', f0(r.consumo_total)+'<u>m³</u>', r.meses_com_dado+' de '+PER.length+' meses com leitura') +
-      kpi('<span class="dot" style="background:var(--valor)"></span>Valor total', brl(r.valor_total), 'no período '+ (PER.length?PER[0].curto+'–'+PER[PER.length-1].curto:'')) +
-      kpi('Média mensal', f1.format(r.media_consumo)+'<u>m³</u>', brl(r.media_valor)+' / mês') +
-      kpi('Variação vs mês anterior', '<span class="'+cd.cls+'">'+ (vu==null?'—':cd.arw+' '+pctTxt(Math.abs(vu)).replace('+','')) +'</span>', 'consumo · '+rotVar);
+      kpi('<span class="dot" style="background:var(--agua)"></span>Consumo total acumulado', f0(r.consumo_total)+'<u>m³</u>', r.meses_com_dado+' de '+PER.length+' meses com leitura') +
+      kpi('<span class="dot" style="background:var(--valor)"></span>Valor total acumulado', brl(r.valor_total), 'no período '+ (PER.length?PER[0].curto+'–'+PER[PER.length-1].curto:'')) +
+      kpi('Média mensal acumulada', f1.format(r.media_consumo)+'<u>m³</u>', brl(r.media_valor)+' / mês') +
+      kpi('Variação: mês atual vs mês anterior', '<span class="'+cd.cls+'">'+ (vu==null?'—':cd.arw+' '+pctTxt(Math.abs(vu)).replace('+','')) +'</span>', 'consumo · '+rotVar);
 
     // ---- Combo chart ----
     var cats=s.map(function(p){return PMAP[p.periodo].curto;});
@@ -563,10 +563,10 @@
       '<div class="up-head"><div class="up-cod">'+u.unidade+' <span>· Bloco '+u.bloco+'</span></div>'+
         '<div class="up-hsub">Relatório de Consumo de Água · '+per+'</div></div>'+
       '<div class="up-kpis">'+
-        kp('Consumo total', f0(r.consumo_total)+' m³', r.meses_com_dado+' meses com leitura')+
-        kp('Valor total', brl(r.valor_total), 'no período')+
-        kp('Média mensal', f1.format(r.media_consumo)+' m³', brl(r.media_valor)+' / mês')+
-        kp('Variação vs anterior', '<span class="'+cd.cls+'">'+(vu==null?'—':cd.arw+' '+pctTxt(Math.abs(vu)).replace('+',''))+'</span>', 'consumo')+
+        kp('Consumo total acumulado', f0(r.consumo_total)+' m³', r.meses_com_dado+' meses com leitura')+
+        kp('Valor total acumulado', brl(r.valor_total), 'no período')+
+        kp('Média mensal acumulada', f1.format(r.media_consumo)+' m³', brl(r.media_valor)+' / mês')+
+        kp('Variação: mês atual vs mês anterior', '<span class="'+cd.cls+'">'+(vu==null?'—':cd.arw+' '+pctTxt(Math.abs(vu)).replace('+',''))+'</span>', 'consumo')+
       '</div>'+
       '<div class="up-chart"><h3>Evolução mensal do consumo (m³)</h3>'+svgBarras(s)+'</div>'+
       '<table class="up-tab"><thead><tr><th>Período</th><th>Leit. ant.</th><th>Leit. atual</th><th>Consumo (m³)</th><th>Δ m³</th><th>Valor (R$)</th></tr></thead><tbody>'+linhas+
