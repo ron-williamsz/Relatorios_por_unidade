@@ -25,6 +25,32 @@ A pasta `relatorio/` é **self-contained** e funciona offline:
   # abra http://localhost:8000
   ```
 
+## Rodar com Docker
+
+O site estático é empacotado num **nginx** leve (com gzip). Nada de backend.
+
+```bash
+docker compose up -d --build      # abre em http://localhost:8090
+docker compose down               # para o container
+```
+
+Ou sem compose:
+
+```bash
+docker build -t relatorios-agua-zangari .
+docker run -d -p 8090:80 --name relatorios-agua relatorios-agua-zangari
+```
+
+**Modo desenvolvimento** (monta `relatorio/` ao vivo, sem rebuild a cada edição):
+
+```bash
+docker compose --profile dev up relatorios-dev   # http://localhost:8081
+```
+
+> Ao atualizar os dados (novas leituras), rode os scripts Python para regenerar
+> `relatorio/dados_*.js` e então `docker compose up -d --build` para reempacotar.
+> Arquivos do container: `Dockerfile`, `nginx.conf`, `docker-compose.yml`, `.dockerignore`.
+
 ## Estrutura
 
 ```

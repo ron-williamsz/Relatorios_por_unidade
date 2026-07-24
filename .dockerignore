@@ -1,0 +1,4 @@
+# Envia ao build apenas o necessário (relatorio/ + nginx.conf).
+*
+!relatorio/
+!nginx.conf
